@@ -1,118 +1,65 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+import React, {useMemo, useState} from 'react';
+import {Dimensions, SafeAreaView, StyleSheet, View} from 'react-native';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [barHeight, setBarHeight] = useState(10);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const memoStyles = useMemo(() => styles(barHeight), [barHeight]);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+    <SafeAreaView>
+      <View style={memoStyles.container}>
+        <View style={memoStyles.outer}>
+          <View style={memoStyles.icons}>
+            <Entypo name="light-up" size={50} color="black" />
+            <Entypo name="light-down" size={50} color="black" />
+          </View>
+          <View style={memoStyles.inner} />
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+const outerRoundedCorner = 60;
+const innerRoundedCorner = outerRoundedCorner - 5;
+
+const styles = (barHeight: number) =>
+  StyleSheet.create({
+    container: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+      height: '100%',
+    },
+    outer: {
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      backgroundColor: 'lightgray',
+      width: Dimensions.get('window').width / 2,
+      height: '80%',
+      borderTopEndRadius: outerRoundedCorner - 5,
+      borderTopStartRadius: outerRoundedCorner - 5,
+      borderBottomRightRadius: outerRoundedCorner - 5,
+      borderBottomLeftRadius: outerRoundedCorner - 5,
+    },
+    icons: {
+      position: 'absolute',
+      zIndex: 1,
+      height: '100%',
+      justifyContent: 'space-between',
+      padding: 20,
+    },
+    inner: {
+      backgroundColor: 'gray',
+      width: Dimensions.get('window').width / 2,
+      height: `${barHeight}%`,
+      borderBottomRightRadius: innerRoundedCorner,
+      borderBottomLeftRadius: innerRoundedCorner,
+      borderTopEndRadius: barHeight > 90 ? innerRoundedCorner : 0,
+      borderTopStartRadius: barHeight > 90 ? innerRoundedCorner : 0,
+    },
+  });
 
 export default App;
