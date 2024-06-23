@@ -1,9 +1,11 @@
 package com.nativemodulesreactnativev0
 
+import android.view.KeyEvent
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+import com.nativemodulesreactnativev0.keyevent.KeyEventModule
 
 class MainActivity : ReactActivity() {
 
@@ -19,4 +21,17 @@ class MainActivity : ReactActivity() {
    */
   override fun createReactActivityDelegate(): ReactActivityDelegate =
       DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+
+
+  override fun onKeyDown(keyCode: Int, keyEvent: KeyEvent): Boolean {
+    KeyEventModule.instance?.dispatchKeyEvent(keyEvent)
+    super.onKeyDown(keyCode, keyEvent)
+    return true // Stop propagation
+  }
+
+  override fun onKeyUp(keyCode: Int, keyEvent: KeyEvent): Boolean {
+    KeyEventModule.instance?.dispatchKeyEvent(keyEvent)
+    super.onKeyUp(keyCode, keyEvent)
+    return true // Stop propagation
+  }
 }

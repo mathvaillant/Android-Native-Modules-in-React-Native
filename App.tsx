@@ -1,11 +1,30 @@
-import React, {useMemo, useState} from 'react';
-import {Dimensions, SafeAreaView, StyleSheet, View} from 'react-native';
+import React, {useEffect, useMemo, useState} from 'react';
 import Entypo from 'react-native-vector-icons/Entypo';
+import { Dimensions, SafeAreaView, StyleSheet, View } from 'react-native';
+import { KeyEventListener } from './NativeModules/KeyEvent/KeyEvent';
+import { EventAction } from './NativeModules/KeyEvent/types';
+import { VolumeKeys } from './NativeModules/KeyEvent/keyMapping';
 
 function App(): React.JSX.Element {
   const [barHeight, setBarHeight] = useState(10);
 
   const memoStyles = useMemo(() => styles(barHeight), [barHeight]);
+
+  useEffect(() => {
+    KeyEventListener.addListener(EventAction.ACTION_DOWN, ({ keyName }) => {
+      if (keyName === VolumeKeys.KEYCODE_VOLUME_UP) {
+        return setBarHeight(prev => Math.min(prev+10, 100))
+      }
+
+      if (keyName === VolumeKeys.KEYCODE_VOLUME_DOWN) {
+        return setBarHeight(prev => Math.max(prev-10, 0))
+      }
+    })
+
+    return () => {
+      KeyEventListener.removeListener(EventAction.ACTION_DOWN)
+    }
+  }, [])
 
   return (
     <SafeAreaView>
