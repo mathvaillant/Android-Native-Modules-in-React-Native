@@ -1,4 +1,4 @@
-import { DeviceEventEmitter, EmitterSubscription, NativeModules } from "react-native";
+import { DeviceEventEmitter, EmitterSubscription } from "react-native";
 import { EventAction, KeyEventProps } from "./types";
 
 class KeyEvent {

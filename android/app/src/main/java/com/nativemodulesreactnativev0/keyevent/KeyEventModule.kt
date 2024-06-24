@@ -5,14 +5,12 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
-import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 
 
-@ReactModule(name = KeyEventModule.NAME)
 class KeyEventModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     override fun getName(): String {
-        return NAME
+        return "KeyEventModule"
     }
 
     private fun onKeyDownEvent(keyEvent: KeyEvent) {
@@ -52,7 +50,6 @@ class KeyEventModule(reactContext: ReactApplicationContext) : ReactContextBaseJa
     }
 
     companion object {
-        const val NAME = "KeyEventModule"
         var instance: KeyEventModule? = null
             private set
 

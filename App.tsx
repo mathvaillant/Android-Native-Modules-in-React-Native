@@ -1,23 +1,41 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { Dimensions, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Dimensions, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { KeyEventListener } from './NativeModules/KeyEvent/KeyEvent';
 import { EventAction } from './NativeModules/KeyEvent/types';
 import { VolumeKeys } from './NativeModules/KeyEvent/keyMapping';
+import { Brightness } from './NativeModules/Brightness/Brightness';
 
 function App(): React.JSX.Element {
   const [barHeight, setBarHeight] = useState(10);
+  const [currentBrightness, setCurrentBrightness] = useState(0);
 
   const memoStyles = useMemo(() => styles(barHeight), [barHeight]);
 
   useEffect(() => {
+    (async () => {
+      const level = await Brightness.getBrightnessLevel()
+      const currentBrightness = level < 0 ? 0 : level > 1 ? 1 : Math.round(level * 10)
+      setCurrentBrightness(currentBrightness * 10)
+    })()
+  },[barHeight])
+
+  useEffect(() => {
     KeyEventListener.addListener(EventAction.ACTION_DOWN, ({ keyName }) => {
       if (keyName === VolumeKeys.KEYCODE_VOLUME_UP) {
-        return setBarHeight(prev => Math.min(prev+10, 100))
+        return setBarHeight(prev => {
+          const value = Math.min(prev+10, 100);
+          Brightness.setBrightnessLevel(value / 100);
+          return value;
+        })
       }
 
       if (keyName === VolumeKeys.KEYCODE_VOLUME_DOWN) {
-        return setBarHeight(prev => Math.max(prev-10, 0))
+        return setBarHeight(prev => {
+          const value = Math.max(prev-10, 0)
+          Brightness.setBrightnessLevel(value / 100);
+          return value;
+        })
       }
     })
 
@@ -29,6 +47,7 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaView>
       <View style={memoStyles.container}>
+        <Text style={memoStyles.text}>{currentBrightness + " %"}</Text>
         <View style={memoStyles.outer}>
           <View style={memoStyles.icons}>
             <Entypo name="light-up" size={50} color="black" />
@@ -46,11 +65,16 @@ const innerRoundedCorner = outerRoundedCorner - 5;
 
 const styles = (barHeight: number) =>
   StyleSheet.create({
+    text: {
+      fontSize: 30,
+      fontWeight: "bold",
+    },
     container: {
       justifyContent: 'center',
       alignItems: 'center',
       padding: 20,
       height: '100%',
+      gap: 20
     },
     outer: {
       alignItems: 'center',
